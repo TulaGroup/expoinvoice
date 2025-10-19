@@ -1,30 +1,23 @@
-import { useState } from 'react';
-
-export default function Login(){
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [err, setErr] = useState<string|null>(null);
-
-  async function submit(e:any){
-    e.preventDefault();
-    const r = await fetch('/api/auth/login', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ email, password })
-    });
-    const data = await r.json();
-    if(!r.ok){ setErr(data.error || 'Login mislukt'); return; }
-    window.location.href = '/dashboard';
-  }
-
+export default function LoginPage() {
   return (
-    <main style={{display:'grid', placeItems:'center', minHeight:'70vh', padding:24}}>
-      <form onSubmit={submit} style={{maxWidth:420, width:'100%', border:'1px solid #e5e7eb', borderRadius:16, padding:24}}>
-        <h1>Inloggen</h1>
-        <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required placeholder="E-mail" style={{width:'100%', padding:10, border:'1px solid #e5e7eb', borderRadius:10}} />
-        <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required placeholder="Wachtwoord" style={{marginTop:12, width:'100%', padding:10, border:'1px solid #e5e7eb', borderRadius:10}} />
-        {err && <div style={{color:'#b91c1c', marginTop:10}}>{err}</div>}
-        <button style={{marginTop:16, width:'100%', padding:12, borderRadius:12, border:'none', background:'#0c2340', color:'#fff', fontWeight:800}}>Inloggen</button>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100vh',
+      backgroundColor: '#f8f9fa',
+      color: '#333'
+    }}>
+      <h1>ExpoInvoice Login</h1>
+      <p>Log in om toegang te krijgen tot je dashboard.</p>
+      <form style={{ display: 'flex', flexDirection: 'column', width: '300px', gap: '10px' }}>
+        <input type="email" placeholder="E-mailadres" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+        <input type="password" placeholder="Wachtwoord" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+        <button type="submit" style={{ backgroundColor: '#0033cc', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer' }}>
+          Inloggen
+        </button>
       </form>
-    </main>
+    </div>
   );
 }
