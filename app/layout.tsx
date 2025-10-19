@@ -1,1 +1,11 @@
-import React from 'react';import '../styles/_site.css';export const metadata = { title: 'ExpoInvoice' };export default function RootLayout({ children }:{children:React.ReactNode}){return(<html lang="nl"><head><meta name="viewport" content="width=device-width, initial-scale=1"/></head><body><div className="topbar"><div className="topbar-inner"><div className="nav-right"><a href="/support">Support</a><a className="btn ghost" href="/login">Inloggen</a><a className="btn primary" href="/registratie">Registreer</a></div></div></div>{children}</body></html>) }
+export const metadata = { title: 'ExpoInvoice' };
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="nl">
+      <body style={{ margin: 0, fontFamily: 'Inter, system-ui, Arial' }}>
+        {children}
+      </body>
+    </html>
+  );
+}
