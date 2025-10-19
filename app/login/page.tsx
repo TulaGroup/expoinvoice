@@ -1,23 +1,31 @@
-export default function LoginPage() {
+'use client';
+import Link from 'next/link';
+
+export default function LoginChooser() {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      backgroundColor: '#f8f9fa',
-      color: '#333'
-    }}>
-      <h1>ExpoInvoice Login</h1>
-      <p>Log in om toegang te krijgen tot je dashboard.</p>
-      <form style={{ display: 'flex', flexDirection: 'column', width: '300px', gap: '10px' }}>
-        <input type="email" placeholder="E-mailadres" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
-        <input type="password" placeholder="Wachtwoord" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
-        <button type="submit" style={{ backgroundColor: '#0033cc', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer' }}>
-          Inloggen
-        </button>
-      </form>
-    </div>
+    <main style={{minHeight:'100vh',display:'grid',placeItems:'center',background:'#f7f8fa',fontFamily:'Inter, system-ui'}}>
+      <div style={{width:'100%',maxWidth:860,display:'grid',gap:24}}>
+        <header style={{textAlign:'center'}}>
+          <h1 style={{margin:0,color:'#0c2340'}}>ExpoInvoice</h1>
+          <p style={{marginTop:8,color:'#475569'}}>Kies je inlogtype</p>
+        </header>
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:24}}>
+          {/* Customer login card */}
+          <div style={{background:'#fff',border:'1px solid #e5e7eb',borderRadius:16,padding:24,boxShadow:'0 8px 24px rgba(16,24,40,.06)'}}>
+            <h2 style={{marginTop:0}}>Login voor klanten</h2>
+            <p style={{color:'#64748b'}}>Bekijk/verwerk facturen, status en history.</p>
+            <Link href="/login/customer" style={{display:'inline-block',marginTop:8,padding:'12px 16px',borderRadius:12,background:'#0c2340',color:'#fff',fontWeight:800,textDecoration:'none'}}>Inloggen als klant</Link>
+          </div>
+
+          {/* Admin login card */}
+          <div style={{background:'#fff',border:'1px solid #e5e7eb',borderRadius:16,padding:24,boxShadow:'0 8px 24px rgba(16,24,40,.06)'}}>
+            <h2 style={{marginTop:0}}>Admin / Beheer</h2>
+            <p style={{color:'#64748b'}}>Onderhoud van administratie & handleiding.</p>
+            <Link href="/login/admin" style={{display:'inline-block',marginTop:8,padding:'12px 16px',borderRadius:12,background:'#0c2340',color:'#fff',fontWeight:800,textDecoration:'none'}}>Inloggen als admin</Link>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
