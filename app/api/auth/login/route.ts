@@ -1,22 +1,49 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import crypto from 'crypto';
+'use client';
+import { useState } from 'react';
 
-function sign(payload: any, secret: string){
-  const payloadB64 = Buffer.from(JSON.stringify(payload)).toString('base64');
-  const sig = crypto.createHmac('sha256', secret).update(payloadB64).digest('hex');
-  return `${payloadB64}.${sig}`;
-}
+export default function AdminLogin() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [err, setErr] = useState<string|null>(null);
+  const [busy, setBusy] = useState(false);
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse){
-  if(req.method !== 'POST') return res.status(405).end();
-  const { email = '', password = '' } = req.body || {};
-  const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
-  const adminPass = process.env.ADMIN_PASSWORD || '';
-  const secret = process.env.APP_SESSION_SECRET || '';
-  if(!adminEmail || !adminPass || !secret) return res.status(500).json({ error:'Server niet geconfigureerd' });
-  if(email.toLowerCase() !== adminEmail || password !== adminPass) return res.status(401).json({ error:'Ongeldige inloggegevens' });
+  async function submit(e:any){
+    e.preventDefault();
+    setBusy(true); setErr(null);
+    const r = await fetch('/api/auth/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password })
+    });
+    const data = await r.json();
+    setBusy(false);
+    if (!r.ok) { setErr(data.error || 'Login mislukt'); return; }
+    window.location.href = '/admin'; // of /dashboard
+  }
 
-  const token = sign({ email, ts: Date.now() }, secret);
-  res.setHeader('Set-Cookie', `session=${token}; HttpOnly; Path=/; Max-Age=${60*60*8}; SameSite=Lax; Secure`);
-  res.status(200).json({ ok:true });
+  return (
+    <main style={{minHeight:'100vh',display:'grid',placeItems:'center',background:'#f7f8fa',fontFamily:'Inter, system-ui'}}>
+      <form onSubmit={submit} style={{width:'100%',maxWidth:420,background:'#fff',border:'1px solid #e5e7eb',borderRadius:16,padding:24,boxShadow:'0 8px 24px rgba(16,24,40,.06)'}}>
+        <h1 style={{margin:'0 0 8px 0',color:'#0c2340'}}>Admin inloggen</h1>
+        <p style={{color:'#64748b',marginTop:0}}>Gebruik jouw beheer-gegevens.</p>
+
+        <label style={{display:'block',fontSize:14,marginTop:12}}>E-mail</label>
+        <input type="email" required value={email} onChange={e=>setEmail(e.target.value)}
+               placeholder="admin@expoinvoice.nl"
+               style={{width:'100%',padding:10,border:'1px solid #e5e7eb',borderRadius:10}}/>
+
+        <label style={{display:'block',fontSize:14,marginTop:12}}>Wachtwoord</label>
+        <input type="password" required value={password} onChange={e=>setPassword(e.target.value)}
+               placeholder="••••••••"
+               style={{width:'100%',padding:10,border:'1px solid #e5e7eb',borderRadius:10}}/>
+
+        {err && <div style={{color:'#b91c1c',marginTop:10}}>{err}</div>}
+
+        <button disabled={busy}
+                style={{marginTop:16,width:'100%',padding:12,borderRadius:12,border:'none',background:'#0c2340',color:'#fff',fontWeight:800}}>
+          {busy ? 'Bezig…' : 'Inloggen'}
+        </button>
+      </form>
+    </main>
+  );
 }
