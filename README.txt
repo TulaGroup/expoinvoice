@@ -1,0 +1,1 @@
+Upload these files into your repo at the same paths. Set envs ADMIN_EMAIL, ADMIN_PASSWORD, APP_SESSION_SECRET, DATABASE_URL in Vercel, then visit /login.
