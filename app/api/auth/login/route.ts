@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
 
 function sign(payload: any, secret: string){
@@ -7,23 +7,16 @@ function sign(payload: any, secret: string){
   return `${payloadB64}.${sig}`;
 }
 
-export async function POST(req: Request){
-  const body = await req.json();
-  const email = (body?.email || '').toLowerCase().trim();
-  const pass = body?.password || '';
-
+export default async function handler(req: NextApiRequest, res: NextApiResponse){
+  if(req.method !== 'POST') return res.status(405).end();
+  const { email = '', password = '' } = req.body || {};
   const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
   const adminPass = process.env.ADMIN_PASSWORD || '';
   const secret = process.env.APP_SESSION_SECRET || '';
+  if(!adminEmail || !adminPass || !secret) return res.status(500).json({ error:'Server niet geconfigureerd' });
+  if(email.toLowerCase() !== adminEmail || password !== adminPass) return res.status(401).json({ error:'Ongeldige inloggegevens' });
 
-  if(!adminEmail || !adminPass || !secret){
-    return NextResponse.json({ error: 'Server niet geconfigureerd' }, { status: 500 });
-  }
-  if(email !== adminEmail || pass !== adminPass){
-    return NextResponse.json({ error: 'Ongeldige inloggegevens' }, { status: 401 });
-  }
   const token = sign({ email, ts: Date.now() }, secret);
-  const res = NextResponse.json({ ok: true });
-  res.cookies.set('session', token, { httpOnly: true, sameSite: 'lax', secure: true, path: '/', maxAge: 60*60*8 });
-  return res;
+  res.setHeader('Set-Cookie', `session=${token}; HttpOnly; Path=/; Max-Age=${60*60*8}; SameSite=Lax; Secure`);
+  res.status(200).json({ ok:true });
 }
