@@ -26,3 +26,16 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = { matcher: ['/admin/:path*','/dashboard/:path*','/crm/:path*'] };
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Stuur automatisch alles naar /login/admin als root of /login bezocht wordt
+  if (pathname === '/' || pathname === '/login') {
+    return NextResponse.redirect(new URL('/login/admin', request.url));
+  }
+
+  return NextResponse.next();
+}
