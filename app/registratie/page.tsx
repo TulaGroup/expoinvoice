@@ -1,1 +1,0 @@
-export default function Page(){return(<main className='section'><div className='inner'><h1>Registreer je bedrijf</h1><p>Onboarding start hier.</p></div></main>);}
