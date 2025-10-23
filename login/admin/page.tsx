@@ -10,13 +10,20 @@ export default function AdminLogin() {
   async function submit(e:any){
     e.preventDefault();
     setBusy(true); setErr(null);
-
-    const okEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@expoinvoice.nl';
-    const okPass  = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123';
-    if (email===okEmail && password===okPass) { window.location.href='/admin'; return; }
-
-    setErr('Ongeldige inloggegevens');
-    setBusy(false);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email, password })
+      });
+      if (res.ok) { window.location.href='/admin'; return; }
+      const data = await res.json().catch(()=>({}));
+      setErr(data?.message || 'Ongeldige inloggegevens');
+    } catch (e:any) {
+      setErr('Er ging iets mis. Probeer opnieuw.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
